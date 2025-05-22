@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GenZ Vibe Quiz</title>
+<style>
+  /* Base and layout for the entire page */
+  body {
+    font-family: 'Inter', sans-serif; /* Using Inter font as per instructions */
+    background: linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%); /* Soft, light gradient background */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+    text-align: center;
+    padding: 20px; /* Add some padding for smaller screens */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    color: #333; /* Default text color */
+  }
+  /* Container for the quiz */
+  .container {
+    background: white; /* White background for the quiz card */
+    max-width: 450px; /* Slightly wider max-width for better content display */
+    width: 90vw; /* Responsive width */
+    padding: 30px; /* Increased padding inside the container */
+    border-radius: 30px; /* More rounded corners, similar to reference */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
+    animation: fadeIn 0.5s ease-out; /* Fade-in animation for the container */
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Styling for question heading */
+  h2 {
+    font-weight: 800; /* Extra bold font weight for impact */
+    font-size: 1.5rem; /* Larger font size for questions */
+    margin-bottom: 25px; /* More space below the heading */
+    color: #2c3e50; /* Darker, more prominent text color */
+    line-height: 1.4;
+  }
+  /* Styling for option buttons */
+  button.option-btn {
+    width: 100%; /* Full width */
+    padding: 16px 15px; /* Generous padding inside buttons */
+    margin: 12px 0; /* Vertical margin between buttons */
+    border-radius: 25px; /* Very rounded corners for buttons */
+    border: none; /* No border */
+    background: #f0f4f8; /* Light grey background for options */
+    font-size: 1.05rem; /* Slightly larger font size */
+    font-weight: 600; /* Medium bold */
+    cursor: pointer; /* Pointer cursor on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    color: #4a4a4a; /* Dark grey text color */
+    text-align: left; /* Align text to the left */
+  }
+  /* Hover effect for option buttons */
+  button.option-btn:hover {
+    background: #e6f0ff; /* Lighter blue on hover */
+    transform: translateY(-3px); /* More pronounced lift effect */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12); /* Enhanced shadow on hover */
+  }
+  /* Styling for progress text */
+  .progress {
+    margin-top: 30px; /* More space above progress text */
+    font-size: 0.95rem; /* Slightly larger font size */
+    color: #7f8c8d; /* Muted grey text color */
+    font-weight: 500;
+  }
+  /* Result card styling */
+  .result-card {
+    padding: 50px 35px; /* Increased padding inside result card */
+    border-radius: 35px; /* Even more rounded corners */
+    color: white; /* White text for result card */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Stronger, more defined shadow */
+    display: flex; /* Use flexbox for content alignment */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    min-height: 300px; /* Ensure a minimum height for the result card */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Subtle text shadow for readability on gradients */
+  }
+  /* Styling for result title */
+  .result-card h2 {
+    font-size: 2.5rem; /* Even larger font size for result title */
+    font-weight: 900; /* Extra extra bold font weight */
+    margin-bottom: 15px; /* More space below title */
+    color: white; /* White text */
+  }
+  /* Styling for result description */
+  .result-card p {
+    font-size: 1.25rem; /* Larger font size for description */
+    margin-bottom: 10px; /* Space below description */
+    opacity: 0.95;
+  }
+  /* Styling for share note */
+  .share-note {
+    font-size: 1rem; /* Slightly larger font size */
+    opacity: 0.8; /* Slightly more transparent */
+    margin-top: 25px; /* More space above share note */
+  }
+  /* Gradient backgrounds for result cards */
+  .gradient-pink-purple {
+    background: linear-gradient(135deg, #ff6b6b, #ee528e); /* Softer, more vibrant pink to purple */
+  }
+  .gradient-sky-indigo {
+    background: linear-gradient(135deg, #4ecdc4, #5a8dff); /* Fresh teal to blue */
+  }
+  .gradient-green-yellow {
+    background: linear-gradient(135deg, #a8e063, #56ab2f); /* Lively green to darker green */
+  }
+  /* New gradient for the fourth vibe */
+  .gradient-teal-lime {
+    background: linear-gradient(135deg, #1abc9c, #2ecc71); /* Stronger teal to emerald green */
+  }
+  /* New gradient for the fifth vibe */
+  .gradient-orange-peach {
+    background: linear-gradient(135deg, #ff9a8b, #ff6a88); /* Warm orange to peach gradient */
+  }
+
+  /* Styles for LLM and Share buttons */
+  .action-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically on small screens */
+    gap: 15px; /* Space between buttons */
+    margin-top: 30px;
+    width: 100%; /* Ensure buttons take full width of their container */
+  }
+
+  .llm-button, .share-button {
+    background: white;
+    color: #6366f1; /* A nice indigo color */
+    border: none;
+    padding: 14px 25px; /* Increased padding */
+    border-radius: 30px; /* More rounded */
+    font-size: 1.05rem; /* Slightly larger font */
+    font-weight: 700; /* Bolder text */
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+    transition: all 0.3s ease;
+    width: 100%; /* Full width for buttons */
+  }
+
+  .llm-button:hover, .share-button:hover {
+    background: #5a8dff; /* Blue on hover */
+    color: white;
+    transform: translateY(-5px); /* More pronounced lift */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25); /* Even stronger shadow */
+  }
+
+  .llm-response {
+    margin-top: 40px; /* More space above LLM response */
+    padding-top: 25px; /* More padding top */
+    border-top: 1px solid rgba(255, 255, 255, 0.4); /* Slightly more visible separator */
+    font-size: 1rem; /* Adjusted font size */
+    line-height: 1.7; /* Increased line height for readability */
+    text-align: left; /* Align text left for readability */
+    white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+    color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for readability on gradients */
+  }
+
+  .loading-indicator {
+    margin-top: 25px; /* Adjusted margin */
+    font-size: 0.95rem; /* Slightly larger font */
+    color: rgba(255, 255, 255, 0.8);
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  /* Message box for copy confirmation */
+  .message-box {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .message-box.show {
+    opacity: 1;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px; /* Adjust padding on smaller screens */
+      border-radius: 25px;
+    }
+    h2 {
+      font-size: 1.3rem; /* Adjust font size for questions */
+      margin-bottom: 20px;
+    }
+    button.option-btn {
+      font-size: 0.95rem; /* Adjust font size for options */
+      padding: 14px 10px; /* Adjust padding for options */
+      border-radius: 20px;
+    }
+    .progress {
+      margin-top: 25px;
+      font-size: 0.9rem;
+    }
+    .result-card {
+      padding: 35px 25px; /* Adjust padding for result card */
+      border-radius: 30px;
+      min-height: 280px;
+    }
+    .result-card h2 {
+      font-size: 2rem; /* Adjust font size for result title */
+    }
+    .result-card p {
+      font-size: 1.1rem; /* Adjust font size for result description */
+    }
+    .action-buttons {
+      flex-direction: column; /* Ensure vertical stacking on mobile */
+      gap: 10px; /* Adjust gap for mobile */
+    }
+    .llm-button, .share-button {
+      padding: 12px 20px;
+      font-size: 0.95rem;
+    }
+    .llm-response {
+      font-size: 0.9rem;
+      margin-top: 30px;
+      padding-top: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="quiz-container">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div id="message-box" class="message-box"></div>
+
+<script>
+  // Array of quiz questions, each with a question string and an array of options.
+  // Each option has text to display and a value (A, B, C, D, or E) corresponding to a vibe.
+  const questions = [
+    {
+      question: "Your ideal weekend pop-up market features…",
+      options: [
+        { text: "🌱 Vegan street-food stalls & indie art collectives", value: "A" },
+        { text: "Innovative tech demos & futuristic gadget booths", value: "B" },
+        { text: "Traditional craft fairs & heritage food stalls", value: "C" },
+        { text: "Sustainable fashion swaps & organic produce stands", value: "D" },
+        { text: "A diverse mix of local businesses and community-led initiatives", value: "E" },
+      ],
+    },
+    {
+      question: "Pick a political meme template for your Insta story today:",
+      options: [
+        { text: "🐶 Doge economist", value: "B" },
+        { text: "🧓 Khatri Chacha rant", value: "A" },
+        { text: "🧘‍♂️ Surya Namaskar fail", value: "C" },
+        { text: "🌍 Greta side-eye", value: "D" },
+        { text: "🤝 Unity meme", value: "E" }, /* New option for Balanced Builder */
+      ],
+    },
+    {
+      question: "You get ₹1 crore to spend—first move?",
+      options: [
+        { text: "Seed 10 social startups", value: "A" },
+        { text: "Angel-invest in crypto AI", value: "B" },
+        { text: "Donate to defence fund", value: "C" },
+        { text: "Fund a climate farm", value: "D" },
+        { text: "Invest in a balanced portfolio for long-term growth", value: "E" }, /* New option for Balanced Builder */
+      ],
+    },
+    {
+      question: "Favourite OTT villain arc:",
+      options: [
+        { text: "The corrupt tycoon gets exposed", value: "A" },
+        { text: "Breakup fuels unicorn IPO", value: "B" },
+        { text: "Rogue general restores order", value: "C" },
+        { text: "Eco-warrior sabotages polluters", value: "D" },
+        { text: "The complex character who evolves through dialogue and understanding", value: "E" },
+      ],
+    },
+    {
+      question: "When the Wi-Fi crashes in hostels, you…",
+      options: [
+        { text: "Create a shared hotspot chain", value: "A" },
+        { text: "Ask admin to upgrade plan", value: "B" },
+        { text: "Write a petition to principal", value: "C" },
+        { text: "Meditate and go analogue", value: "D" },
+        { text: "Organize a temporary offline activity for everyone", value: "E" },
+      ],
+    },
+    {
+      question: "Your playlist for a road trip Delhi → Goa is mostly…",
+      options: [
+        { text: "Protest pop & indie folk", value: "A" },
+        { text: "Hustle rap & EDM", value: "B" },
+        { text: "90s Bollywood nostalgia", value: "C" },
+        { text: "Nature sounds & calming lo-fi", value: "D" },
+        { text: "A mix of popular hits and feel-good anthems", value: "E" },
+      ],
+    },
+    {
+      question: "Your ideal leader is someone who…",
+      options: [
+        { text: "Inspires social movements and challenges power structures.", value: "A" },
+        { text: "Is a visionary technocrat focused on progress and efficiency.", value: "B" },
+        { text: "Upholds strong moral principles and maintains stability.", value: "C" },
+        { text: "Can unite diverse groups and find practical compromises.", value: "E" }, /* New option for Balanced Builder */
+        { text: "Prioritizes ecological health and long-term sustainability.", value: "D" },
+      ],
+    },
+    {
+      question: "Which kind of rule do you vibe with the most?",
+      options: [
+        { text: "Democracy—with debate & noise", value: "A" },
+        { text: "Technocracy—experts in charge", value: "B" },
+        { text: "Dictatorship—with discipline", value: "C" },
+        { text: "Consensus-driven governance", value: "E" }, /* New option for Balanced Builder */
+        { text: "Eco-governance—prioritizing sustainability", value: "D" },
+      ],
+    },
+    {
+      question: "What kind of news headline grabs your attention most?",
+      options: [
+        { text: "“Youth-led protest sparks policy change.”", value: "A" },
+        { text: "“Breakthrough AI innovation revolutionizes industry.”", value: "B" },
+        { text: "“Ancient cultural festival revived with record attendance.”", value: "C" },
+        { text: "“Bipartisan bill passes, addressing key infrastructure needs.”", value: "E" }, /* New option for Balanced Builder */
+        { text: "“Global report warns of accelerating climate crisis.”", value: "D" },
+      ],
+    },
+    {
+      question: "When choosing a career path, you're most drawn to…",
+      options: [
+        { text: "Roles in advocacy, social work, or community organizing.", value: "A" },
+        { text: "Fields like AI, software development, or data science.", value: "B" },
+        { text: "Professions that uphold order, such as law, civil service, or teaching.", value: "C" },
+        { text: "Positions that require negotiation, project management, or policy analysis.", value: "E" }, /* New option for Balanced Builder */
+        { text: "Environmental science, renewable energy, or sustainable agriculture.", value: "D" },
+      ],
+    },
+    {
+      question: "What kind of art or music resonates most with you?",
+      options: [
+        { text: "Art that challenges norms or music with powerful social messages.", value: "A" },
+        { text: "Futuristic digital art or electronic music with complex beats.", value: "B" },
+        { text: "Classical art or traditional folk music that tells a story.", value: "C" },
+        { text: "Pieces that blend styles or music that fosters unity and harmony.", value: "E" }, /* New option for Balanced Builder */
+        { text: "Nature-inspired art or ambient music that evokes peace and calm.", value: "D" },
+      ],
+    },
+    {
+      question: "What kind of friend do you trust the most?",
+      options: [
+        { text: "Always listening, even to your rants", value: "A" },
+        { text: "Tells you harsh truths, no sugar", value: "B" },
+        { text: "Loyal to a fault, backs you in fights", value: "C" },
+        { text: "Helps you find common ground and mediates conflicts", value: "E" }, /* New option for Balanced Builder */
+        { text: "Supports your eco-friendly choices and outdoor adventures", value: "D" },
+      ],
+    },
+  ];
+
+  // Data for different result types, including title, description, and CSS class for gradient.
+  const resultsData = {
+    A: {
+      title: "🌈 Progressive Dreamer",
+      desc: "Chasing justice and a more inclusive world, with a side of matcha lattes.",
+      className: "gradient-pink-purple",
+    },
+    B: {
+      title: "🤖 Techno-Optimist",
+      desc: "Driven by innovation, code, and a vision for a tech-forward future.",
+      className: "gradient-sky-indigo",
+    },
+    C: {
+      title: "🛕 TradCore Guardian",
+      desc: "Rooted in timeless values, seeking order and stability in a changing world.",
+      className: "gradient-green-yellow",
+    },
+    D: { /* New Vibe Category */
+      title: "🌳 Eco-Conscious Spirit",
+      desc: "Deeply connected to nature, striving for a sustainable and harmonious planet.",
+      className: "gradient-teal-lime",
+    },
+    E: { /* New Vibe Category: Balanced Builder */
+      title: "🤝 Balanced Builder",
+      desc: "Focused on practical solutions, finding common ground, and building consensus.",
+      className: "gradient-orange-peach", /* Assign a new gradient */
+    },
+  };
+
+  let currentIndex = 0; // Tracks the current question index
+  let scores = { A: 0, B: 0, C: 0, D: 0, E: 0 }; // Stores scores for each vibe (A, B, C, D, E)
+
+  // Get references to DOM elements
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const progressEl = document.getElementById("progress");
+  const container = document.getElementById("quiz-container");
+  const messageBox = document.getElementById("message-box"); // Get message box element
+
+  /**
+   * Displays a temporary message to the user.
+   * @param {string} message - The message to display.
+   */
+  function showMessage(message) {
+    messageBox.textContent = message;
+    messageBox.classList.add('show');
+    setTimeout(() => {
+      messageBox.classList.remove('show');
+    }, 2000); // Message disappears after 2 seconds
+  }
+
+  /**
+   * Loads the current question and its options into the DOM.
+   */
+  function loadQuestion() {
+    const q = questions[currentIndex]; // Get the current question object
+    questionEl.textContent = q.question; // Set the question text
+    optionsEl.innerHTML = ""; // Clear previous options
+
+    // Create buttons for each option
+    q.options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn"; // Apply button styling
+      btn.textContent = opt.text; // Set button text
+      btn.onclick = () => selectAnswer(opt.value); // Attach click event listener
+      optionsEl.appendChild(btn); // Add button to options container
+    });
+
+    // Update the progress indicator
+    progressEl.textContent = `${currentIndex + 1} / ${questions.length}`;
+  }
+
+  /**
+   * Handles the selection of an answer.
+   * @param {string} value - The value (A, B, C, D, or E) of the selected option.
+   */
+  function selectAnswer(value) {
+    scores[value] = (scores[value] || 0) + 1; // Increment score for the selected vibe
+    currentIndex++; // Move to the next question
+
+    // Check if there are more questions or if the quiz is finished
+    if (currentIndex < questions.length) {
+      loadQuestion(); // Load the next question
+    } else {
+      showResult(); // Show the quiz result
+    }
+  }
+
+  /**
+   * Calculates and displays the final quiz result.
+   */
+  function showResult() {
+    // Find the vibe with the highest score
+    // Object.entries converts the scores object into an array of [key, value] pairs.
+    // sort((a, b) => b[1] - a[1]) sorts the array in descending order based on the score (value).
+    // [0][0] gets the key (vibe type like 'A', 'B', 'C', D, or 'E') of the first element (highest score).
+    const highest = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+    const result = resultsData[highest]; // Get the result data for the highest scoring vibe
+
+    // Update the quiz container with the result card HTML
+    container.innerHTML = `
+      <div class="result-card ${result.className}">
+        <h2>${result.title}</h2>
+        <p>${result.desc}</p>
+        <p class="share-note">Screenshot & share your vibe tribe ✨</p>
+        <div class="action-buttons">
+          <button id="expand-vibe-btn" class="llm-button">✨ Expand My Vibe</button>
+          <button id="share-result-btn" class="share-button">🔗 Share My Vibe</button>
+        </div>
+        <div id="llm-response" class="llm-response"></div>
+      </div>
+    `;
+
+    // Add event listener for the new LLM button
+    document.getElementById("expand-vibe-btn").addEventListener("click", () => {
+      expandVibeDescription(result.title);
+    });
+
+    // Add event listener for the new Share button
+    document.getElementById("share-result-btn").addEventListener("click", () => {
+      const shareText = `My GenZ Vibe is: ${result.title}! ${result.desc}\n\nTake the quiz to find your vibe: [Link to your website here]`; // Customize link
+      copyToClipboard(shareText);
+    });
+  }
+
+  /**
+   * Copies text to the clipboard and shows a confirmation message.
+   * @param {string} text - The text to copy.
+   */
+  function copyToClipboard(text) {
+    // Using document.execCommand('copy') as navigator.clipboard.writeText() may not work in iframes
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      showMessage('Copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      showMessage('Failed to copy. Please try manually.');
+    }
+    document.body.removeChild(textarea);
+  }
+
+
+  /**
+   * Calls the Gemini API to get an expanded description of the user's vibe.
+   * @param {string} vibeTitle - The title of the user's vibe (e.g., "🌈 Progressive Dreamer").
+   */
+  async function expandVibeDescription(vibeTitle) {
+    const llmResponseDiv = document.getElementById("llm-response");
+    const llmButton = document.getElementById("expand-vibe-btn");
+
+    llmResponseDiv.innerHTML = `<p class="loading-indicator">Generating your vibe expansion...</p>`;
+    llmButton.disabled = true; // Disable button during API call
+
+    // Construct the prompt for the LLM
+    const prompt = `Elaborate on the "${vibeTitle}" vibe. Describe their typical interests, core values, preferred ways of spending time, and what might motivate them in their daily life. Keep it concise, engaging, and in a tone suitable for Gen Z. Focus on personality and lifestyle aspects, avoiding direct political terms. Start directly with the description.`;
+
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+    const payload = { contents: chatHistory };
+    const apiKey = ""; // Leave as empty string, Canvas will provide it at runtime
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
+        llmResponseDiv.innerHTML = `<p style="color: red;">Error: Could not expand vibe. Please try again.</p>`;
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+        const text = result.candidates[0].content.parts[0].text;
+        llmResponseDiv.innerHTML = `<p>${text}</p>`; // Display the generated text
+      } else {
+        llmResponseDiv.innerHTML = `<p style="color: red;">No description generated. Try again!</p>`;
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      llmResponseDiv.innerHTML = `<p style="color: red;">Network error or API issue. Check console for details.</p>`;
+    } finally {
+      llmButton.disabled = false; // Re-enable button after API call
+    }
+  }
+
+  // Initialize the quiz by loading the first question when the script runs.
+  loadQuestion();
+</script>
+</body>
+</html>
